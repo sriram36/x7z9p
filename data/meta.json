@@ -1,0 +1,19 @@
+{
+  "dataset_actual": "FUELHH (fuelType=WIND)",
+  "dataset_forecast": "WINDFOR",
+  "decision_window": [
+    "2026-01-01",
+    "2026-01-31"
+  ],
+  "delivery_window": [
+    "2026-01-02",
+    "2026-02-01"
+  ],
+  "max_horizon_h": 72,
+  "ingested_at": "2026-10-24T06:20:13Z",
+  "rows": {
+    "actuals": 1488,
+    "forecasts": 14383
+  },
+  "attribution": "Contains BMRS data \u00a9 Elexon Limited copyright and database right 2026."
+}
