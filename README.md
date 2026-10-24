@@ -7,7 +7,7 @@ Utility buyers must determine how much power must be additionally procured (e.g.
 2. **Quantified forecast error**: Statistical bounds and empirical shortfall risk (e.g., 1-in-20 over-forecast risk) to size their thermal procurement buffers without overpaying or facing balancing penalties.
 
 - **Repository:** https://github.com/sriram36/x7z9p
-- **Live URL:** `<add your Vercel / Heroku URL here>`
+- **Live URL:** https://x7z9p-yxu2.vercel.app/
 - **Data Source:** Elexon BMRS (Insights Solution) API: `FUELHH` (actual wind, half-hourly) and `WINDFOR` (wind forecast, with publish time). Contains BMRS data © Elexon Limited.
 - **Technology Stack:** React (Vite, Recharts) · Python (FastAPI, pure standard library analytics) · Docker · Vercel
 
