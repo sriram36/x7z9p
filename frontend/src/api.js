@@ -1,25 +1,44 @@
 const BASE = import.meta.env.VITE_API_BASE ?? "";
 
-export async function get(path, params = {}) {
+export async function get(path, params = {}, retries = 2) {
   const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null && v !== ""));
-  const res = await fetch(`${BASE}${path}${qs.size ? `?${qs}` : ""}`);
-  if (!res.ok) {
-    let detail = res.statusText;
+  const url = `${BASE}${path}${qs.size ? `?${qs}` : ""}`;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      detail = (await res.json()).detail ?? detail;
-    } catch {
-      /* body was not JSON */
+      const res = await fetch(url);
+      if (!res.ok) {
+        let detail = res.statusText || `HTTP ${res.status}`;
+        try {
+          const body = await res.json();
+          detail = body.detail ?? detail;
+        } catch {
+          /* body was not JSON */
+        }
+        if ([502, 503, 504].includes(res.status) && attempt < retries) {
+          await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+          continue;
+        }
+        throw new Error(typeof detail === "string" && detail.trim() ? detail : `HTTP ${res.status}`);
+      }
+      return await res.json();
+    } catch (err) {
+      if (attempt < retries && !(err.message && err.message.startsWith("HTTP 4"))) {
+        await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+        continue;
+      }
+      throw err;
     }
-    throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
   }
-  return res.json();
 }
 
 /** Small data-loading hook: re-fetches when `deps` change, ignores stale responses. */
 import { useEffect, useState } from "react";
 export function useApi(path, params, enabled = true) {
   const [state, setState] = useState({ data: null, error: null, loading: enabled });
-  const key = JSON.stringify([path, params, enabled]);
+  const [retryKey, setRetryKey] = useState(0);
+  const key = JSON.stringify([path, params, enabled, retryKey]);
+
   useEffect(() => {
     if (!enabled) return;
     let live = true;
@@ -32,5 +51,8 @@ export function useApi(path, params, enabled = true) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
-  return state;
+
+  const reload = () => setRetryKey((k) => k + 1);
+  return { ...state, reload };
 }
+

@@ -68,8 +68,11 @@ export default function App() {
       <main>
         {meta.loading && <p className="state">Loading…</p>}
         {meta.error && (
-          <div className="banner err" role="alert">
-            Can’t reach the API: {meta.error.message}. Start the backend (<code>uvicorn backend.app.main:app</code>) and reload.
+          <div className="banner err" role="alert" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+            <span>Can’t reach the API: {meta.error.message || "Connection timeout"}.</span>
+            <button className="btn" onClick={() => meta.reload()} style={{ padding: "4px 14px", minHeight: "32px", fontSize: "0.9rem" }}>
+              Retry
+            </button>
           </div>
         )}
         {meta.data && !meta.data.ready && (
