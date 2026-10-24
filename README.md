@@ -80,14 +80,15 @@ pytest backend/tests -q
 
 ---
 
-## Deploying to Vercel
+## Deploying to Vercel (Vercel Services)
 
-1. Commit all files (including the `data/` directory, approx. 123 KB compressed).
-2. Import the repository in [Vercel](https://vercel.com).
-3. Select **Other** as the framework preset (root directory `./`).
-4. `vercel.json` automatically:
-   - Builds the React frontend from `frontend/` into `frontend/dist`.
-   - Packages `api/index.py` with `backend/` and `data/` as a Python serverless function at `/api/*`.
+The repository is configured for **Vercel Services** in `vercel.json`:
+1. Commit all files (including the committed `data/` snapshot).
+2. Import the repository in [Vercel](https://vercel.com) (root `./`).
+3. Vercel automatically deploys two coordinated services:
+   - **`frontend`** (Vite + React SPA) serving the public web application at `/(.*)`
+   - **`backend`** (Python FastAPI) serving the public API endpoints at `/api/(.*)` with entrypoint `backend.app.main:app`
+4. Use `vercel dev` locally to run all services together with automated proxy routing.
 
 ---
 
